@@ -1,0 +1,75 @@
+[gd_scene load_steps=10 format=3 uid="uid://ch1ht0btf2b5d"]
+
+[ext_resource type="Script" path="res://Pickups/pickup.gd" id="1_dwf82"]
+[ext_resource type="Shader" uid="uid://o5bxnd2vhun5" path="res://Pickups/FresnelAura.tres" id="2_c1p6b"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_jh4t6"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_gr7o2"]
+radius = 1.0
+
+[sub_resource type="Animation" id="Animation_v08ur"]
+resource_name = "Idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AmmoMesh:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, -2),
+"update": 0,
+"values": [Vector3(0.785398, 0, 0.785398), Vector3(0.785398, 6.28319, 0.785398)]
+}
+
+[sub_resource type="Animation" id="Animation_5jhe4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AmmoMesh:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.785398, 0, 0.785398)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wvl3d"]
+_data = {
+"Idle": SubResource("Animation_v08ur"),
+"RESET": SubResource("Animation_5jhe4")
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_obrc7"]
+render_priority = 0
+shader = ExtResource("2_c1p6b")
+
+[sub_resource type="SphereMesh" id="SphereMesh_exaf3"]
+
+[node name="Pickup" type="Area3D"]
+script = ExtResource("1_dwf82")
+
+[node name="AmmoMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.707107, -0.707107, 0, 0.5, 0.5, -0.707107, 0.5, 0.5, 0.707107, 0, 0, 0)
+mesh = SubResource("BoxMesh_jh4t6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_gr7o2")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Idle"
+libraries = {
+"": SubResource("AnimationLibrary_wvl3d")
+}
+
+[node name="FresnelAura" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_obrc7")
+mesh = SubResource("SphereMesh_exaf3")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
